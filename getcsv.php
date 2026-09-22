@@ -9,14 +9,15 @@ class Pay {
         $currentMonth = $now->format('Ym');
         $fullFilename = $this->filename . $currentMonth . ".csv";
         if (!file_exists($fullFilename)) {
-            $this->createCSV($fullFilename);
+            $data = $this->createData();
+            $this->writeCSV($data, $fullFilename);
         }
         return $fullFilename;
     }
 
-    private function createCSV($fullFilename): void
+    private function createData(): array
     {
-        $file = fopen($fullFilename, "a");
+        $data = [];
         $now = new DateTime();
         $year = (int)$now->format('Y');
         for($month = (int)$now->format('n'); $month <= 12; $month++) {
@@ -30,7 +31,16 @@ class Pay {
                 echo "Error on month " . $month . ". Message: " . $e->getMessage();
                 die;
             }
-            fputcsv($file, $monthData, ";");
+            $data[] = $monthData;
+        }
+        return $data;
+    }
+
+    private function writeCSV($data, $fullFilename): void
+    {
+        $file = fopen($fullFilename, "a");
+        foreach($data as $row) {
+            fputcsv($file, $row, ";");
         }
         fclose($file);
     }
