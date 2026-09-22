@@ -28,6 +28,7 @@ class Pay {
             }
             catch (\Exception $e) {
                 echo "Error on month " . $month . ". Message: " . $e->getMessage();
+                die;
             }
             fputcsv($file, $monthData, ";");
         }
