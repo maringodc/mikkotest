@@ -1,5 +1,7 @@
 <?php
-class Pay {
+
+class Pay
+{
 
     private string $filename = "paydates-";
 
@@ -20,14 +22,13 @@ class Pay {
         $data = [];
         $now = new DateTime();
         $year = (int)$now->format('Y');
-        for($month = (int)$now->format('n'); $month <= 12; $month++) {
+        for ($month = (int)$now->format('n'); $month <= 12; $month++) {
             $monthData = [];
             $monthData[] = DateTime::createFromFormat('!m', $month)->format('F');
             try {
                 $monthData[] = $this->getSalaryDay($year, $month)->format('d-m-Y');
                 $monthData[] = $this->getBonusDay($year, $month)->format('d-m-Y');
-            }
-            catch (\Exception $e) {
+            } catch (\Exception $e) {
                 echo "Error on month " . $month . ". Message: " . $e->getMessage();
                 die;
             }
@@ -39,7 +40,7 @@ class Pay {
     private function writeCSV($data, $fullFilename): void
     {
         $file = fopen($fullFilename, "a");
-        foreach($data as $row) {
+        foreach ($data as $row) {
             fputcsv($file, $row, ";");
         }
         fclose($file);
@@ -53,7 +54,7 @@ class Pay {
         $bonusDay = DateTime::createFromFormat('Y-m-d', $year . '-' . $month . '-15');
         $bonusDay->modify('+1 month');
         $bonusDayWeekday = (int)$bonusDay->format('N');
-        if($bonusDayWeekday >= 6){
+        if ($bonusDayWeekday >= 6) {
             $bonusDay->add(DateInterval::createFromDateString(10 - $bonusDayWeekday . ' day'));
         }
         return $bonusDay;
@@ -67,7 +68,7 @@ class Pay {
     {
         $salaryDay = DateTime::createFromFormat('Y-m', $year . '-' . $month)->modify('last day of this month');
         $salaryDayWeekday = (int)$salaryDay->format('N');
-        if($salaryDayWeekday >= 6){
+        if ($salaryDayWeekday >= 6) {
             $salaryDay->sub(DateInterval::createFromDateString((-5 + $salaryDayWeekday) . ' day'));
         }
         return $salaryDay;
